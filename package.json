@@ -1,0 +1,21 @@
+{
+  "name": "ishinova.co.jp",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "clean": "git clean -xdf node_modules",
+    "scaffold": "scaffdog"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "19.8.0",
+    "@commitlint/config-conventional": "19.8.0",
+    "@commitlint/types": "19.8.0",
+    "astro": "5.7.10",
+    "lefthook": "1.11.12",
+    "scaffdog": "4.1.0"
+  }
+}
