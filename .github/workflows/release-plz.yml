@@ -1,0 +1,400 @@
+name: 'Release Please'
+
+on:
+  # PR 作成
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    # AM 6:00(JST)
+    - cron: '0 21 * * *'
+
+  # Release 作成
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+    paths:
+      - .github/release-please-manifest.json
+
+concurrency:
+  group: release-plz
+
+jobs:
+  create-pr:
+    if: ${{ github.event_name != 'pull_request' && !contains(github.event.head_commit.message, 'workflows/release') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      # https://github.com/marketplace/actions/create-github-app-token
+      - name: Create GitHub App Token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: app-token
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
+      - name: Get new version
+        id: resolve-versions
+        uses: ./.github/actions/resolve-versions
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+
+      # https://github.com/marketplace/actions/github-script
+      - name: Generate release notes
+        id: generate_notes
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          result-encoding: string
+          script: |
+            const script = require('./.github/scripts/generate-release-note-body.cjs');
+            return await script({
+              github,
+              context,
+              version: '${{ steps.resolve-versions.outputs.new-version }}'
+            });
+
+      # https://github.com/marketplace/actions/github-script
+      - name: Existing branch
+        id: existing-branch
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          result-encoding: json
+          script: |
+            const newVersion = '${{ steps.resolve-versions.outputs.new-version }}';
+            try {
+              const { data } = await github.rest.git.getRef({
+                ...context.repo,
+                ref: `heads/workflows/release/v${newVersion}`,
+              });
+              console.log(`data: ${JSON.stringify(data)}`);
+              return data;
+            } catch (error) {
+              console.log(`error: ${error}`);
+              return null;
+            }
+
+      # https://github.com/marketplace/actions/github-script
+      - name: Create pull request
+        if: ${{ steps.existing-branch.outputs.result == 'null' }}
+        id: create_pr
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+
+            const newVersion = '${{ steps.resolve-versions.outputs.new-version }}';
+            const branchName = `workflows/release/v${newVersion}`;
+
+            // Create a new branch
+            await github.rest.git.createRef({
+              ...context.repo,
+              ref: `refs/heads/${branchName}`,
+              sha: context.sha,
+            });
+
+            const manifestFilePath = '.github/release-please-manifest.json';
+
+            if (!fs.existsSync(manifestFilePath)) {
+              throw new Error(`File not found: ${manifestFilePath}`);
+            }
+
+            // manifest.jsonの更新準備
+            const content = fs.readFileSync(manifestFilePath, 'utf8');
+            const manifest = JSON.parse(content);
+            manifest["."] = newVersion;
+            const newManifestContent = JSON.stringify(manifest, null, 2);
+
+            // package.jsonの更新準備
+            let hasPackageJson = false;
+            let packageJsonContent = '';
+            const packageJsonPath = 'package.json';
+            if (fs.existsSync(packageJsonPath)) {
+              hasPackageJson = true;
+              const packageJsonRawContent = fs.readFileSync(packageJsonPath, 'utf8');
+              const packageJson = JSON.parse(packageJsonRawContent);
+              packageJson.version = newVersion;
+              packageJsonContent = JSON.stringify(packageJson, null, 2);
+            }
+
+            // 現在のブランチの最新コミットを取得
+            const { data: refData } = await github.rest.git.getRef({
+              ...context.repo,
+              ref: `heads/${branchName}`,
+            });
+            const currentCommitSha = refData.object.sha;
+
+            // 現在のコミットのツリーを取得
+            const { data: commitData } = await github.rest.git.getCommit({
+              ...context.repo,
+              commit_sha: currentCommitSha,
+            });
+            const currentTreeSha = commitData.tree.sha;
+
+            // 新しいツリーを作成するためのツリーアイテムを準備
+            const treeItems = [];
+
+            // manifest.jsonのツリーアイテムを追加
+            treeItems.push({
+              path: manifestFilePath,
+              mode: '100644',
+              type: 'blob',
+              content: newManifestContent,
+            });
+
+            // package.jsonのツリーアイテムを追加（存在する場合）
+            if (hasPackageJson) {
+              treeItems.push({
+                path: packageJsonPath,
+                mode: '100644',
+                type: 'blob',
+                content: packageJsonContent,
+              });
+            }
+
+            // 新しいツリーを作成
+            const { data: newTree } = await github.rest.git.createTree({
+              ...context.repo,
+              base_tree: currentTreeSha,
+              tree: treeItems,
+            });
+
+            // 新しいコミットを作成
+            const { data: newCommit } = await github.rest.git.createCommit({
+              ...context.repo,
+              message: `chore: release ${newVersion}`,
+              tree: newTree.sha,
+              parents: [currentCommitSha],
+            });
+
+            // ブランチの参照を更新
+            await github.rest.git.updateRef({
+              ...context.repo,
+              ref: `heads/${branchName}`,
+              sha: newCommit.sha,
+            });
+
+            // Create a pull request
+            const pr = await github.rest.pulls.create({
+              ...context.repo,
+              title: `chore: release ${newVersion}`,
+              head: branchName,
+              base: 'main',
+              body: `${{ steps.generate_notes.outputs.result }}`,
+            });
+
+            // ラベルを追加
+            await github.rest.issues.addLabels({
+              ...context.repo,
+              issue_number: pr.data.number,
+              labels: ['ignore for release']
+            });
+
+            return pr.data.html_url;
+
+      - name: Display PR URL
+        if: ${{ steps.existing-branch.outputs.result == 'null' }}
+        run: |
+          echo "Pull Request URL: ${{ steps.create_pr.outputs.result }}"
+
+      # https://github.com/marketplace/actions/github-script
+      - name: Update pull request
+        if: ${{ steps.existing-branch.outputs.result != 'null' }}
+        id: update-pr
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+
+            // Get main branch latest commit
+            const mainRef = await github.rest.git.getRef({
+              ...context.repo,
+              ref: 'heads/main',
+            });
+            const mainSha = mainRef.data.object.sha;
+
+            // Get pull request
+            const newVersion = '${{ steps.resolve-versions.outputs.new-version }}';
+            const branchName = `workflows/release/v${newVersion}`;
+            const { data: pulls } = await github.rest.pulls.list({
+              ...context.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${branchName}`,
+            });
+
+            // 既存のPRがない場合はエラーログを出力
+            if (pulls.length === 0) {
+              console.log('Warning: No open PR found for branch: ' + branchName);
+              console.log('Branch exists but PR may have been closed. Check GitHub manually.');
+              return null;
+            }
+
+            // 既存のPRがある場合はリセットして更新
+            const pr = pulls[0];
+            console.log(`Existing PR found: ${JSON.stringify(pr)}`);
+
+            // リセット: mainブランチの最新コミットでブランチをリセット
+            await github.rest.git.updateRef({
+              ...context.repo,
+              ref: `heads/${branchName}`,
+              sha: mainSha,
+              force: true
+            });
+
+            const manifestFilePath = '.github/release-please-manifest.json';
+            if (!fs.existsSync(manifestFilePath)) {
+              throw new Error(`File not found: ${manifestFilePath}`);
+            }
+
+            const content = fs.readFileSync(manifestFilePath, 'utf8');
+            const manifest = JSON.parse(content);
+            manifest["."] = newVersion;
+            const newManifestContent = JSON.stringify(manifest, null, 2);
+
+            // パッケージJSONの更新準備
+            let hasPackageJson = false;
+            let packageJsonContent = '';
+            const packageJsonPath = 'package.json';
+            if (fs.existsSync(packageJsonPath)) {
+              hasPackageJson = true;
+              const packageJsonRawContent = fs.readFileSync(packageJsonPath, 'utf8');
+              const packageJson = JSON.parse(packageJsonRawContent);
+              packageJson.version = newVersion;
+              packageJsonContent = JSON.stringify(packageJson, null, 2);
+            }
+
+            // 現在のブランチの最新コミットを取得
+            const { data: refData } = await github.rest.git.getRef({
+              ...context.repo,
+              ref: `heads/${branchName}`,
+            });
+            const currentCommitSha = refData.object.sha;
+
+            // 現在のコミットのツリーを取得
+            const { data: commitData } = await github.rest.git.getCommit({
+              ...context.repo,
+              commit_sha: currentCommitSha,
+            });
+            const currentTreeSha = commitData.tree.sha;
+
+            // 新しいツリーを作成するためのツリーアイテムを準備
+            const treeItems = [];
+
+            // manifest.jsonのツリーアイテムを追加
+            treeItems.push({
+              path: manifestFilePath,
+              mode: '100644',
+              type: 'blob',
+              content: newManifestContent,
+            });
+
+            // package.jsonのツリーアイテムを追加（存在する場合）
+            if (hasPackageJson) {
+              treeItems.push({
+                path: packageJsonPath,
+                mode: '100644',
+                type: 'blob',
+                content: packageJsonContent,
+              });
+            }
+
+            // 新しいツリーを作成
+            const { data: newTree } = await github.rest.git.createTree({
+              ...context.repo,
+              base_tree: currentTreeSha,
+              tree: treeItems,
+            });
+
+            // 新しいコミットを作成
+            const { data: newCommit } = await github.rest.git.createCommit({
+              ...context.repo,
+              message: `chore: release ${newVersion}`,
+              tree: newTree.sha,
+              parents: [currentCommitSha],
+            });
+
+            // ブランチの参照を更新
+            await github.rest.git.updateRef({
+              ...context.repo,
+              ref: `heads/${branchName}`,
+              sha: newCommit.sha,
+            });
+
+            // Update pull request body
+            await github.rest.pulls.update({
+              ...context.repo,
+              pull_number: pr.number,
+              body: `${{ steps.generate_notes.outputs.result }}`,
+            });
+
+            return pr.html_url;
+
+      - name: Display PR URL
+        if: ${{ steps.existing-branch.outputs.result != 'null' }}
+        run: |
+          echo "Pull Request URL: ${{ steps.update-pr.outputs.result }}"
+
+  create-release:
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      # https://github.com/marketplace/actions/create-github-app-token
+      - name: Create GitHub App Token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: app-token
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
+      - name: Get new version
+        id: resolve-versions
+        uses: ./.github/actions/resolve-versions
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+
+      # https://github.com/marketplace/actions/github-script
+      - name: Create release
+        id: create-release
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          result-encoding: string
+          script: |
+            const releaseVersion = '${{ steps.resolve-versions.outputs.current-version }}';
+            const release = await github.rest.repos.createRelease({
+              ...context.repo,
+              tag_name: `v${releaseVersion}`,
+              generate_release_notes: true,
+            });
+
+            return release.data.html_url;
+
+      # https://github.com/marketplace/actions/github-script
+      - name: Comment on PR
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const releaseHtmlUrl = '${{ steps.create-release.outputs.result }}';
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.number,
+              body: `:robot: Release is at ${releaseHtmlUrl} :sunflower:`
+            });
