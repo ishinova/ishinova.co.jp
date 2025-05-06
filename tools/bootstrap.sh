@@ -111,8 +111,8 @@ fi
 ##
 ##############################################################################
 record_step "lefthook install: Start"
-if command -v lefthook >/dev/null 2>&1; then
-  if lefthook install; then
+if command -v bun run lefthook >/dev/null 2>&1; then
+  if bun run lefthook install; then
     printf "%s lefthook install: Success\n" "${CHECK_MARK}"
   else
     printf "%s lefthook install: Failed\n" "${ERROR_MARK}"
