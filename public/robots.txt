@@ -1,0 +1,6 @@
+# robots.txt for ishinova.co.jp
+# Sitemaps help search engines discover content efficiently
+User-agent: *
+Disallow:
+
+Sitemap: https://ishinova.co.jp/sitemap.xml

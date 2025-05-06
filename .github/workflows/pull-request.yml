@@ -12,6 +12,10 @@ concurrency:
 jobs:
   changes:
     uses: ./.github/workflows/wc-changes.yml
+    with:
+      gh-app-id: ${{ vars.BOT_APP_ID }}
+    secrets:
+      gh-app-private-key: ${{ secrets.BOT_PRIVATE_KEY }}
 
   status-check:
     runs-on: ubuntu-24.04
@@ -25,7 +29,7 @@ jobs:
 
   semantic-pull-request:
     name: Semantic Pull Request
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     needs:
       - changes
     if: needs.changes.outputs.semantic_pr == 'true'
@@ -44,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
   action:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     needs: changes
     if: needs.changes.outputs.action == 'true'
     permissions:
