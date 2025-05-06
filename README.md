@@ -1,48 +1,91 @@
-# Astro Starter Kit: Basics
+# Ishinova - コーポレートサイト
 
-```sh
-bun create astro@latest -- --template basics
+「維新（Ishin）」と「新星（Nova）」の融合による、伝統的価値観と破壊的イノベーションの統合を象徴するコーポレートサイト。
+
+## 概要
+
+Ishinovaは和モダンと近未来感（サイバーパンク）を掛け合わせたデザインコンセプトに基づくコーポレートサイトです。桜の花弁と光の波紋をモチーフにしたミニマルでありながら象徴的なデザインを採用しています。
+
+## 技術スタック
+
+- **フロントエンドフレームワーク**: [Astro.js](https://astro.build/)
+- **スタイル**: CSS / CSS Modules
+- **フォント**: Noto Sans JP
+
+## 開発方法
+
+### 必要条件
+
+- Node.js 16.x 以上
+- npm または Bun
+
+### インストール
+
+```bash
+# 依存関係のインストール
+npm install
+# または
+bun install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+### 開発サーバーの起動
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm run dev
+# または
+bun run dev
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+開発サーバーが起動したら、ブラウザで [http://localhost:4321](http://localhost:4321) にアクセスしてください。
 
-## 🧞 Commands
+### ビルド
 
-All commands are run from the root of the project, from a terminal:
+```bash
+npm run build
+# または
+bun run build
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+ビルドされたファイルは `dist` ディレクトリに出力されます。
 
-## 👀 Want to learn more?
+### プレビュー
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```bash
+npm run preview
+# または
+bun run preview
+```
+
+ビルドされたサイトをローカルでプレビューできます。
+
+## プロジェクト構成
+
+```
+ishinova.co.jp/
+├── public/          # 静的ファイル
+│   └── assets/      # 画像などのアセット
+├── src/             # ソースコード
+│   ├── assets/      # コンポーネントで使用するアセット
+│   ├── components/  # Astroコンポーネント
+│   ├── layouts/     # レイアウトコンポーネント
+│   ├── pages/       # ページコンポーネント
+│   └── styles/      # グローバルスタイル
+└── ...
+```
+
+## デザインガイドライン
+
+### カラーパレット
+
+- 藍色 (#0F4C81) - メインカラー、テキストやアクセント
+- 金色 (#D4AF37) - 強調要素、CTAボタンなど
+- 墨色 (#2F2F2F) - 見出し、ボディテキスト
+
+### フォント
+
+- 見出し: Noto Sans JP (Bold)
+- 本文: Noto Sans JP (Regular)
+
+## ライセンス
+
+All rights reserved © Ishinova
