@@ -14,8 +14,8 @@
 		<meta property="og:title" content={`${Astro.props.title || 'Ishinova | 伝統と革新の統合'}`} />
 		<meta property="og:description" content="伝統的価値観と破壊的イノベーションの統合を象徴するIshinova。和モダンと近未来感を掛け合わせたデザインで次世代のスタンダードを提案します。" />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://ishinova.co.jp/" />
-		<meta property="og:image" content="/ogp.jpg" />
+		<meta property="og:url" content={import.meta.env.SITE} />
+		<meta property="og:image" content={`${import.meta.env.SITE}/ogp.jpg`} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
