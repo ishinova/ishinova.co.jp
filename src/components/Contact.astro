@@ -20,24 +20,25 @@
         </div>
       </div>
       <div class="contact-form-container">
-        <form class="contact-form">
+        <p class="form-note">* 現在このフォームは準備中です。メールでのお問い合わせをご利用ください。</p>
+        <form class="contact-form" aria-disabled="true">
           <div class="form-group">
             <label for="name">お名前</label>
-            <input type="text" id="name" name="name" required>
+            <input type="text" id="name" name="name" required disabled>
           </div>
           <div class="form-group">
             <label for="email">メールアドレス</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" required disabled>
           </div>
           <div class="form-group">
             <label for="subject">件名</label>
-            <input type="text" id="subject" name="subject" required>
+            <input type="text" id="subject" name="subject" required disabled>
           </div>
           <div class="form-group">
             <label for="message">メッセージ</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
+            <textarea id="message" name="message" rows="5" required disabled></textarea>
           </div>
-          <button type="submit" class="submit-button">送信する</button>
+          <button type="submit" class="submit-button" disabled>送信する</button>
         </form>
       </div>
     </div>
@@ -118,6 +119,7 @@
     border-radius: 12px;
     padding: 2.5rem;
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+    opacity: 0.8;
   }
 
   .contact-form {
@@ -165,6 +167,27 @@
 
   .submit-button:hover {
     background-color: var(--color-gold);
+  }
+
+  .form-note {
+    font-size: 0.9em;
+    color: #888;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .contact-form input:disabled,
+  .contact-form textarea:disabled,
+  .contact-form button:disabled {
+    background-color: #f5f5f5;
+    color: #a5a5a5;
+    border: 1px solid #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  .contact-form {
+    pointer-events: none;
   }
 
   @media (max-width: 768px) {
@@ -215,8 +238,9 @@
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      alert('お問い合わせありがとうございます。近日中にご連絡いたします。');
-      contactForm.reset();
+      // フォームが無効化されている間はアラートも表示しない
+      // alert('お問い合わせありがとうございます。近日中にご連絡いたします。');
+      // contactForm.reset();
     });
   }
-</script> 
+</script>         
