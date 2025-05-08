@@ -240,17 +240,9 @@ jobs:
               return null;
             }
 
-            // 既存のPRがある場合はリセットして更新
+            // 既存のPRがある場合はリベース
             const pr = pulls[0];
             console.log(`Existing PR found: ${JSON.stringify(pr)}`);
-
-            // リセット: mainブランチの最新コミットでブランチをリセット
-            await github.rest.git.updateRef({
-              ...context.repo,
-              ref: `heads/${branchName}`,
-              sha: mainSha,
-              force: true
-            });
 
             const manifestFilePath = '.github/release-please-manifest.json';
             if (!fs.existsSync(manifestFilePath)) {
@@ -274,17 +266,10 @@ jobs:
               packageJsonContent = JSON.stringify(packageJson, null, 2);
             }
 
-            // 現在のブランチの最新コミットを取得
-            const { data: refData } = await github.rest.git.getRef({
-              ...context.repo,
-              ref: `heads/${branchName}`,
-            });
-            const currentCommitSha = refData.object.sha;
-
-            // 現在のコミットのツリーを取得
+            // mainブランチの最新コミットのツリーを取得
             const { data: commitData } = await github.rest.git.getCommit({
               ...context.repo,
-              commit_sha: currentCommitSha,
+              commit_sha: mainSha,
             });
             const currentTreeSha = commitData.tree.sha;
 
@@ -321,14 +306,15 @@ jobs:
               ...context.repo,
               message: `chore: release ${newVersion}`,
               tree: newTree.sha,
-              parents: [currentCommitSha],
+              parents: [mainSha],
             });
 
-            // ブランチの参照を更新
+            // ブランチの参照を強制更新
             await github.rest.git.updateRef({
               ...context.repo,
               ref: `heads/${branchName}`,
               sha: newCommit.sha,
+              force: true
             });
 
             // Update pull request body
