@@ -1,0 +1,88 @@
+name: Slash Command
+
+on:
+  issue_comment:
+    types:
+      - created
+
+concurrency:
+  group: slash-command-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  ########################################
+  # Common
+  ########################################
+  get-pr-info:
+    name: Get Pull Request Info
+    runs-on: ubuntu-24.04
+    if: github.event.issue.pull_request
+    outputs:
+      ref: ${{ steps.pull-request.outputs.ref }}
+      pr_data: ${{ steps.pull-request.outputs.pr_data }}
+    steps:
+      # https://github.com/marketplace/actions/create-github-app-token
+      - name: Create GitHub App Token
+        uses: actions/create-github-app-token@3ff1caaa28b64c9cc276ce0a02e2ff584f3900c5 # v2.0.2
+        id: app-token
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
+      - name: Get Pull Request details
+        id: pull-request
+        run: |
+          PR_DATA=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json number,title,body,headRefName,baseRefName,headRefOid,url | jq -c .)
+          echo "ref=$(echo "${PR_DATA}" | jq -r .headRefName)" >> "$GITHUB_OUTPUT"
+          echo "pr_data=${PR_DATA}" >> "$GITHUB_OUTPUT"
+          echo "::group::PR Data"
+          echo "${PR_DATA}"
+          echo "::endgroup::"
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+  ########################################
+  # Preview
+  ########################################
+  preview-command:
+    name: Preview Command
+    runs-on: ubuntu-24.04
+    if: github.event.issue.pull_request
+    outputs:
+      continue: ${{ steps.preview-command.outputs.continue }}
+    steps:
+      # https://github.com/marketplace/actions/create-github-app-token
+      - name: Create GitHub App Token
+        uses: actions/create-github-app-token@3ff1caaa28b64c9cc276ce0a02e2ff584f3900c5 # v2.0.2
+        id: app-token
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
+      # https://github.com/marketplace/actions/command-action
+      - name: Preview Command
+        id: preview-command
+        uses: github/command@3f3318d2e0145c6588eaa9c6c93493ca2d7daa97 # v1.5.1
+        with:
+          github_token: ${{ steps.app-token.outputs.token }}
+          command: /preview
+          reaction: "eyes"
+          allowed_contexts: "pull_request"
+          skip_ci: "true"
+          skip_reviews: "true"
+
+  preview:
+    needs:
+      - get-pr-info
+      - preview-command
+    if: ${{ needs.preview-command.outputs.continue == 'true' }}
+    name: Preview
+    uses: ./.github/workflows/preview.yml
+    with:
+      gh-app-id: ${{ vars.BOT_APP_ID }}
+      ref: ${{ needs.get-pr-info.outputs.ref }}
+      pr_data: ${{ needs.get-pr-info.outputs.pr_data }}
+    secrets:
+      cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      gh-app-private-key: ${{ secrets.BOT_PRIVATE_KEY }}
