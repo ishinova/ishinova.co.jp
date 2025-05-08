@@ -28,7 +28,7 @@ runs:
           const { data: { body } } = await github.rest.repos.generateReleaseNotes({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            tag_name: `v${inputs.version}`,
+            tag_name: `v${{ inputs.version }}`,
           });
           return body;
 
