@@ -64,8 +64,8 @@ jobs:
         with:
           project-name: ishinovacojp
           branch: ${{ inputs.ref }}
-          cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-account-id: ${{ secrets.cloudflare-account-id }}
+          cloudflare-api-token: ${{ secrets.cloudflare-api-token }}
 
       # https://github.com/marketplace/actions/comment-pull-request
       - if: steps.deploy.outcome == 'success'
