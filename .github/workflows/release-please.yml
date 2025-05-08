@@ -19,7 +19,6 @@ jobs:
     outputs:
       new-version: ${{ steps.resolve-versions.outputs.new-version }}
       notes: ${{ steps.generate_notes.outputs.body }}
-      app-token: ${{ steps.app-token.outputs.token }}
       action: ${{ steps.determine_action.outputs.result }}
     steps:
       - name: Checkout
@@ -73,11 +72,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
       - name: Create Release PR
         id: create_pr
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
-          github-token: ${{ needs.validate.outputs.app-token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
           script: |
             const createReleasePr = require('./.github/scripts/release-pr-create.cjs');
@@ -103,11 +109,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
       - name: Update Release PR
         id: update_pr
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
-          github-token: ${{ needs.validate.outputs.app-token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
           script: |
             const updateReleasePr = require('./.github/scripts/release-pr-update.cjs');
