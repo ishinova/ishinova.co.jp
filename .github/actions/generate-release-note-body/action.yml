@@ -34,5 +34,7 @@ runs:
 
     - name: Set output
       run: |
-        echo "body=${{ steps.generate.outputs.result }}" >> $GITHUB_OUTPUT
+        echo "body<<EOF" >> $GITHUB_OUTPUT
+        echo "${{ steps.generate.outputs.result }}" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
       shell: bash
