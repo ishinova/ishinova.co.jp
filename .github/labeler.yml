@@ -3,103 +3,44 @@ version: 1
 
 labels:
   # Type labels
-  - label: "type/feature"
-    title: '^\[.*?\]\s*feat(?:\(.+?\))?\!?:'
+  - label: "type:feature"
+    title: '^feat(?:\(.+?\))?\!?:'
 
-  - label: "type/fix"
-    title: '^\[.*?\]\s*fix(?:\(.+?\))?\!?:'
+  - label: "type:fix"
+    title: '^fix(?:\(.+?\))?\!?:'
 
-  - label: "type/docs"
-    title: '^\[.*?\]\s*docs(?:\(.+?\))?\!?:'
+  - label: "type:docs"
+    title: '^docs(?:\(.+?\))?\!?:'
     files:
       - "docs/.+"
       - "**/README.md$"
 
-  - label: "type/style"
-    title: '^\[.*?\]\s*style(?:\(.+?\))?\!?:'
+  - label: "type:style"
+    title: '^style(?:\(.+?\))?\!?:'
 
-  - label: "type/refactor"
-    title: '^\[.*?\]\s*refactor(?:\(.+?\))?\!?:'
+  - label: "type:refactor"
+    title: '^refactor(?:\(.+?\))?\!?:'
 
-  - label: "type/perf"
-    title: '^\[.*?\]\s*perf(?:\(.+?\))?\!?:'
+  - label: "type:perf"
+    title: '^perf(?:\(.+?\))?\!?:'
 
-  - label: "type/test"
-    title: '^\[.*?\]\s*test(?:\(.+?\))?\!?:'
+  - label: "type:test"
+    title: '^test(?:\(.+?\))?\!?:'
 
-  - label: "type/build"
-    title: '^\[.*?\]\s*build(?:\(.+?\))?\!?:'
+  - label: "type:build"
+    title: '^build(?:\(.+?\))?\!?:'
     files:
-      - "**/package.json$"
-      - "**/bun.lockb$"
+      - "**/pubspec.yaml$"
+      - "**/melos.yaml$"
 
-  - label: "type/ci"
-    title: '^\[.*?\]\s*ci(?:\(.+?\))?\!?:'
+  - label: "type:ci"
+    title: '^ci(?:\(.+?\))?\!?:'
     files:
       - '\.github/.+'
-      - "scripts/.+"
       - "tools/.+"
-      - "Makefile"
-      - "plopfile.mjs"
-      - "renovate.json5"
 
-  - label: "type/chore"
-    title: '^\[.*?\]\s*chore(?:\(.+?\))?\!?:'
+  - label: "type:chore"
+    title: '^chore(?:\(.+?\))?\!?:'
 
-  - label: "type/revert"
-    title: '^\[.*?\]\s*revert(?:\(.+?\))?\!?:'
-
-  # Top Package labels
-  - label: "@apps/backend"
-    files:
-      - "apps/backend/.+"
-
-  - label: "@apps/frontend"
-    files:
-      - "apps/frontend/.+"
-
-  # Core Package labels
-  - label: "@core/common"
-    files:
-      - "core/common/.+"
-
-  - label: "@core/data"
-    files:
-      - "core/data/.+"
-
-  - label: "@core/database"
-    files:
-      - "core/database/.+"
-
-  - label: "@core/datastore"
-    files:
-      - "core/datastore/.+"
-
-  - label: "@core/designsystem"
-    files:
-      - "core/designsystem/.+"
-
-  - label: "@core/domain"
-    files:
-      - "core/domain/.+"
-
-  - label: "@core/model"
-    files:
-      - "core/model/.+"
-
-  - label: "@core/network"
-    files:
-      - "core/network/.+"
-
-  - label: "@core/testing"
-    files:
-      - "core/testing/.+"
-
-  # Feature Package labels
-  - label: "@feature/top"
-    files:
-      - "feature/top/.+"
-
-  - label: "@feature/auth"
-    files:
-      - "feature/auth/.+"
+  - label: "type:revert"
+    title: '^revert(?:\(.+?\))?\!?:'
