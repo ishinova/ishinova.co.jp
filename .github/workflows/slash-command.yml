@@ -41,16 +41,16 @@ jobs:
           pull_request=$(gh pr view "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --json number,title,body,headRefName,baseRefName,headRefOid,url)
 
           # outputs
-          echo "ref=$(jq -r .headRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "number=$(jq -r .number <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "title=$(jq -r .title <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "head-ref=$(jq -r .headRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "base-ref=$(jq -r .baseRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "head-sha=$(jq -r .headRefOid <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "url=$(jq -r .url <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          echo ref="$(jq -r .headRefName <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo number="$(jq -r .number <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo title="$(jq -r .title <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo head-ref="$(jq -r .headRefName <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo base-ref="$(jq -r .baseRefName <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo head-sha="$(jq -r .headRefOid <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo url="$(jq -r .url <<<"$pull_request")" >> "$GITHUB_OUTPUT"
+          echo 'body<<EOF' >> "$GITHUB_OUTPUT"
           jq -r .body <<<"$pull_request" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo 'EOF' >> "$GITHUB_OUTPUT"
 
           # display
           echo "::group::Pull Request Info"
