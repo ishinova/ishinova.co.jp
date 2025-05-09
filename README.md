@@ -1,4 +1,6 @@
-# Ishinova - コーポレートサイト
+![hero.svg](public/assets/hero.svg)
+
+# ishinova.co.jp
 
 「維新（Ishin）」と「新星（Nova）」の融合による、伝統的価値観と破壊的イノベーションの統合を象徴するコーポレートサイト。
 
