@@ -6,20 +6,26 @@ on:
       - created
 
 concurrency:
-  group: slash-command-${{ github.event.issue.number }}
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
   ########################################
   # Common
   ########################################
-  get-pr-info:
+  pull-request:
     name: Get Pull Request Info
     runs-on: ubuntu-24.04
     if: github.event.issue.pull_request
     outputs:
       ref: ${{ steps.pull-request.outputs.ref }}
-      pr_data: ${{ steps.pull-request.outputs.pr_data }}
+      number: ${{ steps.pull-request.outputs.number }}
+      title: ${{ steps.pull-request.outputs.title }}
+      body: ${{ steps.pull-request.outputs.body }}
+      head-ref: ${{ steps.pull-request.outputs.head_ref }}
+      base-ref: ${{ steps.pull-request.outputs.base_ref }}
+      head-sha: ${{ steps.pull-request.outputs.head_sha }}
+      url: ${{ steps.pull-request.outputs.url }}
     steps:
       # https://github.com/marketplace/actions/create-github-app-token
       - name: Create GitHub App Token
@@ -32,9 +38,10 @@ jobs:
       - name: Get Pull Request details
         id: pull-request
         run: |
-          PR_DATA=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json number,title,body,headRefName,baseRefName,headRefOid,url | jq -c .)
-          echo "ref=$(echo "${PR_DATA}" | jq -r .headRefName)" >> "$GITHUB_OUTPUT"
-          echo "pr_data=${PR_DATA}" >> "$GITHUB_OUTPUT"
+          PR_DATA=$(gh pr view "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --json number,title,body,headRefName,baseRefName,headRefOid,url)
+          echo "$PR_DATA" | jq -r '
+            {ref:.headRefName,number:.number,title:.title,body:.body,head_ref:.headRefName,base_ref:.baseRefName,head_sha:.headRefOid,url:.url}
+            | to_entries[] | "\(.key)=\(.value)"' >> "$GITHUB_OUTPUT"
           echo "::group::PR Data"
           echo "${PR_DATA}"
           echo "::endgroup::"
@@ -73,15 +80,16 @@ jobs:
 
   preview:
     needs:
-      - get-pr-info
+      - pull-request
       - preview-command
     if: ${{ needs.preview-command.outputs.continue == 'true' }}
     name: Preview
     uses: ./.github/workflows/preview.yml
     with:
       gh-app-id: ${{ vars.BOT_APP_ID }}
-      ref: ${{ needs.get-pr-info.outputs.ref }}
-      pr_data: ${{ needs.get-pr-info.outputs.pr_data }}
+      ref: ${{ needs.pull-request.outputs.ref }}
+      head-sha: ${{ needs.pull-request.outputs.head-sha }}
+      sha: ${{ github.sha }}
     secrets:
       cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}

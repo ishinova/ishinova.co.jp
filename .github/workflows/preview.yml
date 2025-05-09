@@ -9,7 +9,13 @@ on:
       ref:
         required: true
         type: string
-      pr_data:
+      sha:
+        description: "Commit SHA"
+        required: false
+        default: ${{ github.sha }}
+        type: string
+      head-sha:
+        description: "Pull Request head SHA"
         required: true
         type: string
     secrets:
@@ -49,7 +55,7 @@ jobs:
           message: |
             ## Deploying page with &nbsp;<a href="https://pages.dev">Cloudflare Pages</a>
 
-            :dancer: Now building ${{ github.sha }} ... :dancer:
+            :dancer: Now building ${{ inputs.sha }} ... :dancer:
 
             <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">github actions run **${{ github.run_id }}**</a>
           comment-tag: deploy-preview
@@ -76,7 +82,7 @@ jobs:
             ## Deploying page with &nbsp;<a href="https://pages.dev">Cloudflare Pages</a>
 
             <table><tr><td><strong>Latest commit:</strong> </td><td>
-            ${{ github.sha }} (i.e. ${{ fromJson(inputs.pr_data).headRefOid }} on preview)
+            ${{ inputs.sha }} (i.e. ${{ inputs.head-sha }} on preview)
             </td></tr>
             <tr><td><strong>Status:</strong></td><td>&nbsp;✅&nbsp; Deploy successful!</td></tr>
             <tr><td><strong>Preview URL:</strong></td><td>
@@ -97,7 +103,7 @@ jobs:
             ## Deploying page with &nbsp;<a href="https://pages.dev">Cloudflare Pages</a>
 
             <table><tr><td><strong>Latest commit:</strong> </td><td>
-            ${{ github.sha }}
+            ${{ inputs.sha }}
             </td></tr>
             <tr><td><strong>Status:</strong></td><td>&nbsp;:warning:&nbsp; ${{ steps.deploy.outcome == 'failure' && 'Deploy' || '**Job**' }} failure!</td></tr>
             </table>
