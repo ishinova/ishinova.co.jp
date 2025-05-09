@@ -1,7 +1,7 @@
 {
   "name": "ishinova.co.jp",
   "type": "module",
-  "version": "2025.5.7",
+  "version": "2025.5.8",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
