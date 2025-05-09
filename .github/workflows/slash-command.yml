@@ -6,7 +6,7 @@ on:
       - created
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}-${{ github.event.comment.id }}
   cancel-in-progress: true
 
 jobs:
@@ -22,9 +22,9 @@ jobs:
       number: ${{ steps.pull-request.outputs.number }}
       title: ${{ steps.pull-request.outputs.title }}
       body: ${{ steps.pull-request.outputs.body }}
-      head-ref: ${{ steps.pull-request.outputs.head_ref }}
-      base-ref: ${{ steps.pull-request.outputs.base_ref }}
-      head-sha: ${{ steps.pull-request.outputs.head_sha }}
+      head-ref: ${{ steps.pull-request.outputs.head-ref }}
+      base-ref: ${{ steps.pull-request.outputs.base-ref }}
+      head-sha: ${{ steps.pull-request.outputs.head-sha }}
       url: ${{ steps.pull-request.outputs.url }}
     steps:
       # https://github.com/marketplace/actions/create-github-app-token
@@ -44,8 +44,9 @@ jobs:
           echo "ref=$(jq -r .headRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
           echo "number=$(jq -r .number <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
           echo "title=$(jq -r .title <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "base_ref=$(jq -r .baseRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
-          echo "head_sha=$(jq -r .headRefOid <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "head-ref=$(jq -r .headRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "base-ref=$(jq -r .baseRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "head-sha=$(jq -r .headRefOid <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
           echo "url=$(jq -r .url <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
           echo "body<<EOF" >> "$GITHUB_OUTPUT"
           jq -r .body <<<"$pull_request" >> "$GITHUB_OUTPUT"
