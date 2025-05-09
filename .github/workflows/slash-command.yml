@@ -38,12 +38,22 @@ jobs:
       - name: Get Pull Request details
         id: pull-request
         run: |
-          PR_DATA=$(gh pr view "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --json number,title,body,headRefName,baseRefName,headRefOid,url)
-          echo "$PR_DATA" | jq -r '
-            {ref:.headRefName,number:.number,title:.title,body:.body,head_ref:.headRefName,base_ref:.baseRefName,head_sha:.headRefOid,url:.url}
-            | to_entries[] | "\(.key)=\(.value)"' >> "$GITHUB_OUTPUT"
-          echo "::group::PR Data"
-          echo "${PR_DATA}"
+          pull_request=$(gh pr view "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --json number,title,body,headRefName,baseRefName,headRefOid,url)
+
+          # outputs
+          echo "ref=$(jq -r .headRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "number=$(jq -r .number <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "title=$(jq -r .title <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "base_ref=$(jq -r .baseRefName <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(jq -r .headRefOid <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "url=$(jq -r .url <<<\"$pull_request\")" >> "$GITHUB_OUTPUT"
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          jq -r .body <<<"$pull_request" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+          # display
+          echo "::group::Pull Request Info"
+          echo "${pull_request}"
           echo "::endgroup::"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
