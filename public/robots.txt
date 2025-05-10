@@ -3,4 +3,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://ishinova.co.jp/sitemap.xml
+Sitemap: https://ishinova.co.jp/sitemap-index.xml
