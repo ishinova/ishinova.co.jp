@@ -20,7 +20,7 @@ on:
 jobs:
   pr_type:
     name: Pull Request Type
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     outputs:
       semantic_pr: ${{ steps.check.outputs.semantic_pr }}
     steps:
@@ -45,7 +45,7 @@ jobs:
 
   changes:
     name: Changes
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     outputs:
       action: ${{ steps.filter.outputs.action }}
       any: ${{ steps.filter.outputs.changes != '[]' }}
@@ -75,7 +75,7 @@ jobs:
 
   display_outputs:
     name: Display Outputs
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     needs:
       - pr_type
       - changes
