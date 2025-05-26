@@ -8,11 +8,11 @@
       </div>
       <nav>
         <ul>
-          <li><a href="#concept">コンセプト</a></li>
-          <li><a href="#features">特徴</a></li>
-          <li><a href="#vision">ビジョン</a></li>
-          <li><a href="#company">会社概要</a></li>
-          <li><a href="#contact" class="button">お問い合わせ</a></li>
+          <li><a href="/#concept">コンセプト</a></li>
+          <li><a href="/#features">特徴</a></li>
+          <li><a href="/#vision">ビジョン</a></li>
+          <li><a href="/#company">会社概要</a></li>
+          <li><a href="/#contact" class="button">お問い合わせ</a></li>
         </ul>
         <button class="mobile-menu-button" aria-label="メニュー">
           <span></span>
@@ -161,11 +161,18 @@
   }
 
   // Anchor smooth scroll with header offset
-  document.querySelectorAll('nav ul a[href^="#"]').forEach(link => {
+  document.querySelectorAll('nav ul a[href^="/#"]').forEach(link => {
     link.addEventListener('click', e => {
+      const href = link.getAttribute('href');
+      if (window.location.pathname !== '/') {
+        // If not on home page, navigate to home with hash
+        window.location.href = href;
+        return;
+      }
+      // If on home page, smooth scroll
       e.preventDefault();
       navMenu.classList.remove('active');
-      const target = document.querySelector(link.getAttribute('href'));
+      const target = document.querySelector(href.substring(1));
       if (!target) return;
       const headerHeight = document.querySelector('header').offsetHeight;
       const topPos = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
