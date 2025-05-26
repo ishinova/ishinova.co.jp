@@ -13,11 +13,11 @@ const year = new Date().getFullYear();
         <div class="footer-nav">
           <h4>サイトマップ</h4>
           <ul>
-            <li><a href="#concept">コンセプト</a></li>
-            <li><a href="#features">特徴</a></li>
-            <li><a href="#vision">ビジョン</a></li>
-            <li><a href="#company">会社概要</a></li>
-            <li><a href="#contact">お問い合わせ</a></li>
+            <li><a href="/#concept">コンセプト</a></li>
+            <li><a href="/#features">特徴</a></li>
+            <li><a href="/#vision">ビジョン</a></li>
+            <li><a href="/#company">会社概要</a></li>
+            <li><a href="/#contact">お問い合わせ</a></li>
           </ul>
         </div>
         <div class="footer-social">
@@ -25,6 +25,13 @@ const year = new Date().getFullYear();
           <ul>
             <li><a href="https://x.com/ishinovainc/" target="_blank" rel="noopener noreferrer">X</a></li>
             <li><a href="https://www.instagram.com/ishinovainc/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          </ul>
+        </div>
+        <div class="footer-legal">
+          <h4>法的情報</h4>
+          <ul>
+            <li><a href="/privacy">プライバシーポリシー</a></li>
+            <li><a href="/terms">利用規約</a></li>
           </ul>
         </div>
       </div>
@@ -64,31 +71,36 @@ const year = new Date().getFullYear();
   }
 
   .footer-nav h4,
-  .footer-social h4 {
+  .footer-social h4,
+  .footer-legal h4 {
     color: white;
     margin-bottom: 1rem;
   }
 
   .footer-nav ul,
-  .footer-social ul {
+  .footer-social ul,
+  .footer-legal ul {
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
   .footer-nav li,
-  .footer-social li {
+  .footer-social li,
+  .footer-legal li {
     margin-bottom: 0.5rem;
   }
 
   .footer-nav a,
-  .footer-social a {
+  .footer-social a,
+  .footer-legal a {
     color: #ccc;
     transition: color 0.3s ease;
   }
 
   .footer-nav a:hover,
-  .footer-social a:hover {
+  .footer-social a:hover,
+  .footer-legal a:hover {
     color: var(--color-gold);
   }
 
