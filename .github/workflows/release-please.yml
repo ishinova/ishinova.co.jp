@@ -5,13 +5,15 @@ on:
   push:
     branches:
       - main
-  schedule:
-    # AM 6:00(JST)
-    - cron: '0 21 * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 
 concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -47,7 +49,12 @@ jobs:
           github-token: ${{ steps.app-token.outputs.token }}
 
       - name: Check manifest file
-        run: test -f .github/release-please-manifest.json
+        run: |
+          if [ ! -f .github/release-please-manifest.json ]; then
+            echo "::error::Release manifest file not found at .github/release-please-manifest.json"
+            exit 1
+          fi
+          echo "✅ Release manifest file found"
 
       - name: Determine action
         id: determine_action
@@ -93,6 +100,9 @@ jobs:
       - name: Create Release PR
         id: create_pr
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          RELEASE_VERSION: ${{ needs.validate.outputs.new-version }}
+          RELEASE_NOTES: ${{ needs.validate.outputs.notes }}
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
@@ -101,8 +111,8 @@ jobs:
             return await createReleasePr({
               github,
               context,
-              version: '${{ needs.validate.outputs.new-version }}',
-              notes: `${{ needs.validate.outputs.notes }}`
+              version: process.env.RELEASE_VERSION,
+              notes: process.env.RELEASE_NOTES
             });
 
       - name: Display PR URL
@@ -130,6 +140,9 @@ jobs:
       - name: Update Release PR
         id: update_pr
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          RELEASE_VERSION: ${{ needs.validate.outputs.new-version }}
+          RELEASE_NOTES: ${{ needs.validate.outputs.notes }}
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
@@ -138,8 +151,8 @@ jobs:
             return await updateReleasePr({
               github,
               context,
-              version: '${{ needs.validate.outputs.new-version }}',
-              notes: `${{ needs.validate.outputs.notes }}`
+              version: process.env.RELEASE_VERSION,
+              notes: process.env.RELEASE_NOTES
             });
 
       - name: Display PR URL
