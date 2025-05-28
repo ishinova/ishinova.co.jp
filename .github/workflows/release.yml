@@ -9,9 +9,14 @@ on:
     paths:
       - .github/release-please-manifest.json
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 concurrency:
   group:  ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   create-release:

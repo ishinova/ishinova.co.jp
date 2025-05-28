@@ -33,8 +33,12 @@ runs:
           return body;
 
     - name: Set output
+      env:
+        RELEASE_NOTES: ${{ steps.generate.outputs.result }}
       run: |
-        echo "body<<EOF" >> $GITHUB_OUTPUT
-        echo "${{ steps.generate.outputs.result }}" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        {
+          echo "body<<EOF"
+          echo "$RELEASE_NOTES"
+          echo "EOF"
+        } >> $GITHUB_OUTPUT
       shell: bash
