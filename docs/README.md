@@ -151,6 +151,7 @@ ishinova.co.jp/
 - **[デプロイメント](./deployment.md)** - ビルドとデプロイ手順
 - **[デザインシステム](./design-system.md)** - カラー、タイポグラフィ、コンポーネント
 - **[コンポーネントリファレンス](./components.md)** - 各コンポーネントの詳細
+- **[リリースフロー](./release-flow.md)** - 自動化されたリリースプロセスとGitHub Actions
 
 ## コントリビューション
 
