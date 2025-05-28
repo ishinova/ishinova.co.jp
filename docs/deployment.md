@@ -22,7 +22,7 @@ Ishinovaコーポレートサイトは静的サイトジェネレーター（Ast
 GitHub Repository
     ↓ (自動/手動トリガー)
 ビルドプロセス
-    ↓ (npm run build)
+    ↓ (bun run build)
 静的ファイル生成 (dist/)
     ↓ (デプロイ)
 ホスティングサービス
@@ -41,7 +41,7 @@ GitHub Repository
 node --version  # v18.14.1以上
 
 # 依存関係の確認
-npm list --depth=0
+bun pm ls
 
 # 環境変数の確認（必要な場合）
 echo $NODE_ENV
@@ -51,9 +51,9 @@ echo $NODE_ENV
 
 ```bash
 # クリーンビルド
-npm run clean
-npm install
-npm run build
+bun run clean
+bun install
+bun run build
 ```
 
 #### 3. ビルド成果物の確認
@@ -66,7 +66,7 @@ ls -la dist/
 du -sh dist/*
 
 # 生成されたHTMLの検証
-npm run preview
+bun run preview
 ```
 
 ### ビルド最適化
@@ -111,14 +111,14 @@ git checkout main
 git pull origin main
 
 # プロダクションビルド
-npm run build
+bun run build
 ```
 
 #### 2. ビルド成果物の検証
 
 ```bash
 # ローカルでプレビュー
-npm run preview
+bun run preview
 
 # ブラウザで確認
 open http://localhost:4321
@@ -165,10 +165,10 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
         
       - name: Build
-        run: npm run build
+        run: bun run build
         env:
           SITE_URL: https://ishinova.co.jp
           
@@ -399,7 +399,7 @@ export default defineConfig({
 
 ```bash
 # ビルドテスト
-npm run build && npm run preview
+bun run build && bun run preview
 
 # HTMLバリデーション
 npx html-validator dist/index.html
@@ -423,7 +423,7 @@ npx lighthouse https://ishinova.co.jp
 2. **ロールバック実行**
    ```bash
    git checkout {previous-commit-hash}
-   npm run build
+   bun run build
    # デプロイ実行
    ```
 

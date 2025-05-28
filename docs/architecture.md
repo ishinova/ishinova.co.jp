@@ -24,7 +24,7 @@
 
 | ツール | 用途 |
 |--------|------|
-| Bun/npm | パッケージ管理 |
+| Bun | パッケージ管理 |
 | mise | バージョン管理 |
 | lefthook | Git hooks |
 | commitlint | コミットメッセージ検証 |
@@ -169,7 +169,7 @@ HTML <head> (出力)
 ### 開発ビルド
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 1. Astro開発サーバーの起動
@@ -180,7 +180,7 @@ npm run dev
 ### プロダクションビルド
 
 ```bash
-npm run build
+bun run build
 ```
 
 1. TypeScriptのコンパイル

@@ -24,7 +24,7 @@
 #### 推奨ツール
 
 - **mise**: 言語バージョン管理
-- **Bun**: 高速なJavaScriptランタイム（npmの代替）
+- **Bun**: 高速なJavaScriptランタイムとパッケージマネージャー
 
 ### セットアップ手順
 
@@ -55,15 +55,13 @@ cd ishinova.co.jp
 mise install
 
 # 依存関係のインストール
-npm install
-# または
 bun install
 ```
 
 #### 4. 開発サーバーの起動
 
 ```bash
-npm run dev
+bun run dev
 # または
 bun run dev
 ```
@@ -146,23 +144,23 @@ main
 
 ```bash
 # 開発サーバー起動
-npm run dev
+bun run dev
 
 # プロダクションビルド
-npm run build
+bun run build
 
 # ビルドのプレビュー
-npm run preview
+bun run preview
 
 # 依存関係のクリーン
-npm run clean
+bun run clean
 
 # コンポーネントの雛形生成
-npm run scaffold
+bun run scaffold
 
 # コードチェック（もし設定されている場合）
-npm run lint
-npm run typecheck
+bun run lint
+bun run typecheck
 ```
 
 ## コーディング規約
@@ -331,20 +329,20 @@ const processedItems = items.map(item => item.toUpperCase());
 
 ```bash
 # ビルドが成功することを確認
-npm run build
+bun run build
 
 # ビルド結果のプレビュー
-npm run preview
+bun run preview
 ```
 
 ### Lint チェック
 
 ```bash
 # TypeScriptの型チェック
-npm run typecheck
+bun run typecheck
 
 # コードスタイルのチェック（設定されている場合）
-npm run lint
+bun run lint
 ```
 
 ### 手動テスト項目
@@ -376,10 +374,10 @@ npm run lint
 
 ```bash
 # node_modulesとlockファイルを削除
-npm run clean
+bun run clean
 
 # 再インストール
-npm install
+bun install
 ```
 
 #### 2. ポート競合エラー
@@ -400,7 +398,7 @@ npx tsc --version
 
 # 型定義の再生成
 rm -rf node_modules/@types
-npm install
+bun install
 ```
 
 #### 4. ビルドエラー
@@ -411,7 +409,7 @@ rm -rf .astro
 rm -rf dist
 
 # 再ビルド
-npm run build
+bun run build
 ```
 
 ### デバッグ方法
