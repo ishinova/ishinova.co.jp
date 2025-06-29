@@ -36,11 +36,11 @@ graph TD
     B -->|Yes| D[既存リリースPR更新]
     
     C --> E[workflows/release/vX.X.X ブランチ作成]
-    E --> F[manifest.json 更新]
+    E --> F[VERSION ファイル更新]
     F --> G[package.json 更新]
     G --> H[PR作成・ラベル付与]
     
-    D --> I[manifest.json 更新]
+    D --> I[VERSION ファイル更新]
     I --> J[package.json 更新]
     J --> K[PR本文更新]
     
@@ -75,13 +75,13 @@ graph TD
 
 **create-pr**（新規作成時）
 1. リリースブランチ作成（`workflows/release/vX.X.X`）
-2. manifest.jsonとpackage.jsonを更新
+2. VERSIONファイルとpackage.jsonを更新
 3. リリースPRを作成
 4. `ignore for release`ラベルを付与
 
 **update-pr**（更新時）
 1. 既存のリリースブランチを更新
-2. manifest.jsonとpackage.jsonを更新
+2. VERSIONファイルとpackage.jsonを更新
 3. PR本文を最新のリリースノートで更新
 
 ### 2. release.yml
@@ -89,7 +89,7 @@ graph TD
 このワークフローは、リリースPRがマージされた時に動作します。
 
 #### トリガー
-- リリースPRのマージ（`.github/release-please-manifest.json`の変更を含む）
+- リリースPRのマージ（`VERSION`ファイルの変更を含む）
 
 #### 主要ステップ
 1. 新しいバージョンを解決
@@ -102,7 +102,7 @@ graph TD
 ### GitHub Actions
 
 #### resolve-versions
-- 現在のバージョンをmanifest.jsonから取得
+- 現在のバージョンをVERSIONファイルから取得
 - 新しいバージョンを計算（年月が変わったら0にリセット）
 
 #### generate-release-note-body
@@ -115,7 +115,7 @@ graph TD
 共通機能を提供：
 - mainブランチのSHA取得
 - ブランチの作成・確認
-- manifest.jsonとpackage.jsonの更新
+- VERSIONファイルとpackage.jsonの更新
 - 変更のコミット
 
 #### release-pr-create.cjs
@@ -130,12 +130,10 @@ graph TD
 
 ### 設定ファイル
 
-#### .github/release-please-manifest.json
+#### VERSION
 現在のバージョンを保持：
-```json
-{
-  ".": "2025.5.19"
-}
+```
+2025.6.0
 ```
 
 ## セキュリティ
@@ -151,11 +149,11 @@ graph TD
 3. ワークフローの実行ログを確認
 
 ### バージョンが正しく更新されない場合
-1. manifest.jsonの形式を確認
+1. VERSIONファイルの形式を確認
 2. resolve-versions actionのログを確認
 3. 日付設定（タイムゾーン）を確認
 
 ### リリースが作成されない場合
 1. リリースPRが正しくマージされたか確認
-2. manifest.jsonの変更が含まれているか確認
+2. VERSIONファイルの変更が含まれているか確認
 3. release.ymlワークフローの実行ログを確認

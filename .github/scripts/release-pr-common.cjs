@@ -38,20 +38,17 @@ async function ensureBranch(github, context, branch, baseSha) {
 }
 
 /**
- * 指定したバージョンでマニフェスト JSON ファイルを更新する。
- * @param {string} manifestPath - マニフェスト JSON ファイルのパス。
+ * 指定したバージョンで VERSION ファイルを更新する。
+ * @param {string} versionPath - VERSION ファイルのパス。
  * @param {string} version - 設定するバージョン文字列。
- * @throws {Error} マニフェスト ファイルが存在しない場合。
- * @returns {string} 更新されたマニフェストの内容を JSON 文字列として。
+ * @throws {Error} VERSION ファイルが存在しない場合。
+ * @returns {string} 更新されたバージョン文字列。
  */
-function updateManifest(manifestPath, version) {
-  if (!fs.existsSync(manifestPath)) {
-    throw new Error(`ファイルが見つかりません: ${manifestPath}`);
+function updateVersionFile(versionPath, version) {
+  if (!fs.existsSync(versionPath)) {
+    throw new Error(`ファイルが見つかりません: ${versionPath}`);
   }
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  manifest['.'] = version;
-  return JSON.stringify(manifest, null, 2);
-}
+  return version;
 
 /**
  * 指定したバージョンで package.json を更新する。
@@ -103,7 +100,7 @@ async function commitChanges(github, context, branch, baseSha, treeItems, messag
 }
 
 /**
- * マニフェストと package.json を更新し、リリース用ブランチを作成／準備する。
+ * VERSION ファイルと package.json を更新し、リリース用ブランチを作成／準備する。
  * @param {{github: import('@actions/github').GitHub, context: import('@actions/github').Context, version: string}} options - リリースブランチ準備オプション。
  * @returns {Promise<string>} 作成されたリリースブランチ名。
  */
@@ -112,14 +109,14 @@ async function prepareReleaseBranch({github, context, version}) {
   const baseSha = await getBaseSha(github, context);
   await ensureBranch(github, context, branch, baseSha);
 
-  const manifestPath = '.github/release-please-manifest.json';
-  const updatedManifest = updateManifest(manifestPath, version);
+  const versionPath = 'VERSION';
+  const updatedVersion = updateVersionFile(versionPath, version);
 
   const tree = [{
-    path: manifestPath,
+    path: versionPath,
     mode: '100644',
     type: 'blob',
-    content: updatedManifest,
+    content: updatedVersion,
   }];
 
   const pkgPath = 'package.json';
