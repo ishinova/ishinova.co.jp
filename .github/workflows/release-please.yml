@@ -48,13 +48,13 @@ jobs:
           version: ${{ steps.resolve-versions.outputs.new-version }}
           github-token: ${{ steps.app-token.outputs.token }}
 
-      - name: Check manifest file
+      - name: Check version file
         run: |
-          if [ ! -f .github/release-please-manifest.json ]; then
-            echo "::error::Release manifest file not found at .github/release-please-manifest.json"
+          if [ ! -f VERSION ]; then
+            echo "::error::Version file not found at VERSION"
             exit 1
           fi
-          echo "✅ Release manifest file found"
+          echo "✅ Version file found"
 
       - name: Determine action
         id: determine_action

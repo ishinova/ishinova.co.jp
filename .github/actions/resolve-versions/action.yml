@@ -7,10 +7,10 @@ inputs:
     description: 'The GitHub token used to create an authenticated client'
     required: false
     default: ${{ github.token }}
-  manifest-file:
-    description: 'where can the manifest file be found in the project?'
+  version-file:
+    description: 'where can the version file be found in the project?'
     required: false
-    default: ''
+    default: 'VERSION'
 outputs:
   current-version:
     description: 'Current version'
@@ -23,23 +23,21 @@ runs:
   using: composite
   steps:
     # https://github.com/marketplace/actions/github-script
-    - name: Resolve the current version from the manifest file.
+    - name: Resolve the current version from the version file.
       id: current-version
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
         github-token: ${{ inputs.github-token }}
         result-encoding: string
         script: |
-          const manifestFilePath = core.getInput('manifest-file') || '.github/release-please-manifest.json';
+          const versionFilePath = core.getInput('version-file') || 'VERSION';
 
           const fs = require('fs');
-          if (!fs.existsSync(manifestFilePath)) {
-            throw new Error(`File not found: ${manifestFilePath}`);
+          if (!fs.existsSync(versionFilePath)) {
+            throw new Error(`File not found: ${versionFilePath}`);
           }
 
-          const content = fs.readFileSync(manifestFilePath, 'utf8');
-          const manifest = JSON.parse(content);
-          const currentVersion = manifest["."];
+          const currentVersion = fs.readFileSync(versionFilePath, 'utf8').trim();
 
           console.log(`currentVersion: ${currentVersion}`)
           return currentVersion;
