@@ -48,7 +48,9 @@ function updateVersionFile(versionPath, version) {
   if (!fs.existsSync(versionPath)) {
     throw new Error(`ファイルが見つかりません: ${versionPath}`);
   }
-  return version;
+  fs.writeFileSync(versionPath, version + '\n', 'utf8');
+  return version + '\n';
+}
 
 /**
  * 指定したバージョンで package.json を更新する。
