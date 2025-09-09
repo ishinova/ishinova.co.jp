@@ -15,7 +15,7 @@
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-conventional": "19.8.1",
     "@commitlint/types": "19.8.1",
-    "astro": "5.13.5",
+    "astro": "5.13.6",
     "lefthook": "1.12.4",
     "scaffdog": "4.1.0"
   }
