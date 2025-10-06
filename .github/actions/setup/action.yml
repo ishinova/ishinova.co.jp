@@ -8,7 +8,7 @@ runs:
   steps:
     # https://github.com/marketplace/actions/mise-action
     - name: mise action
-      uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
+      uses: jdx/mise-action@e3d7b8d67a7958d1207f6ed871e83b1ea780e7b0 # v3.3.1
 
     - name: Install deps
       shell: bash
