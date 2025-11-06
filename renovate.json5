@@ -10,6 +10,7 @@
   "labels": [
     "dependencies"
   ],
+  "minimumReleaseAge": "3 days",
   "pruneBranchAfterAutomerge": true,
   "rangeStrategy": "pin",
   "packageRules": [
