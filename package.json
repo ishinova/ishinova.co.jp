@@ -16,7 +16,7 @@
     "@commitlint/config-conventional": "20.0.0",
     "@commitlint/types": "20.0.0",
     "astro": "5.15.3",
-    "lefthook": "1.13.6",
+    "lefthook": "2.0.2",
     "scaffdog": "4.1.0"
   }
 }
