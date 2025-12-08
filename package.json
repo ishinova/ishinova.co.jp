@@ -12,11 +12,11 @@
   },
   "devDependencies": {
     "@astrojs/sitemap": "3.6.0",
-    "@commitlint/cli": "20.1.0",
-    "@commitlint/config-conventional": "20.0.0",
-    "@commitlint/types": "20.0.0",
+    "@commitlint/cli": "20.2.0",
+    "@commitlint/config-conventional": "20.2.0",
+    "@commitlint/types": "20.2.0",
     "astro": "5.16.4",
-    "lefthook": "2.0.7",
+    "lefthook": "2.0.8",
     "scaffdog": "4.1.0"
   }
 }
