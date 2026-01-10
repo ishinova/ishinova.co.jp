@@ -11,11 +11,11 @@
     "scaffold": "scaffdog"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "3.6.0",
+    "@astrojs/sitemap": "3.6.1",
     "@commitlint/cli": "20.3.0",
     "@commitlint/config-conventional": "20.3.0",
     "@commitlint/types": "20.2.0",
-    "astro": "5.16.6",
+    "astro": "5.16.7",
     "lefthook": "2.0.13",
     "scaffdog": "4.1.0"
   }
