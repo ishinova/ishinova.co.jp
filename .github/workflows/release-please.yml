@@ -58,7 +58,7 @@ jobs:
 
       - name: Determine action
         id: determine_action
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           result-encoding: string
           script: |
@@ -99,7 +99,7 @@ jobs:
 
       - name: Create Release PR
         id: create_pr
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         env:
           RELEASE_VERSION: ${{ needs.validate.outputs.new-version }}
           RELEASE_NOTES: ${{ needs.validate.outputs.notes }}
@@ -139,7 +139,7 @@ jobs:
 
       - name: Update Release PR
         id: update_pr
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         env:
           RELEASE_VERSION: ${{ needs.validate.outputs.new-version }}
           RELEASE_NOTES: ${{ needs.validate.outputs.notes }}
