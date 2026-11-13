@@ -43,7 +43,7 @@ jobs:
           private-key: ${{ secrets.BOT_PRIVATE_KEY }}
 
       # https://github.com/marketplace/actions/semantic-pull-request
-      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+      - uses: amannn/action-semantic-pull-request@2252a14e810aa9b85c2d560bd7070c802206ecf6 # v6.1.2
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
@@ -69,7 +69,7 @@ jobs:
           private-key: ${{ secrets.BOT_PRIVATE_KEY }}
 
       # https://github.com/marketplace/actions/actionlint-with-reviewdog
-      - uses: reviewdog/action-actionlint@8b682e1e7e512151d73a6b9449cbff173846226e # v1.74.0
+      - uses: reviewdog/action-actionlint@78b296370c5c75abca79860e9baa9846e3286a29 # v1.84.0
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           fail_level: error
